@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>台股拉霸機</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/css/main.css">
+
+</head>
+<body>
+  <div class="slot-machine" id="slotMachine" role="button" aria-label="抽取幸運股票" tabindex="0" aria-live="polite">
+    <div class="machine-lights"></div>
+
+    <div class="machine-top">
+      <h1 class="title">🎰 台股拉霸機</h1>
+    </div>
+
+    <div class="slots-container">
+      <div class="slot"><div class="slot-reel" id="reel1">
+        <div class="slot-item">💰</div><div class="slot-item">📈</div><div class="slot-item">🚀</div><div class="slot-item">💎</div>
+        <div class="slot-item">⭐</div><div class="slot-item">🎯</div><div class="slot-item">🔥</div><div class="slot-item">💝</div>
+      </div></div>
+
+      <div class="slot"><div class="slot-reel" id="reel2">
+        <div class="slot-item">🎲</div><div class="slot-item">🎊</div><div class="slot-item">🌟</div><div class="slot-item">💫</div>
+        <div class="slot-item">🎈</div><div class="slot-item">🎭</div><div class="slot-item">🎪</div><div class="slot-item">🎨</div>
+      </div></div>
+
+      <div class="slot"><div class="slot-reel" id="reel3">
+        <div class="slot-item">🏆</div><div class="slot-item">🎖️</div><div class="slot-item">👑</div><div class="slot-item">💰</div>
+        <div class="slot-item">🎯</div><div class="slot-item">⚡</div><div class="slot-item">🔮</div><div class="slot-item">🎁</div>
+      </div></div>
+    </div>
+
+    <div class="result-display">
+      <div class="result-screen">
+        <div class="result-content" id="result">按機台或按空白鍵開始抽獎！</div>
+      </div>
+    </div>
+
+    <div class="instructions"><p>🎮 點擊機台任意處或按空白鍵抽取幸運股票</p></div>
+  </div>
+  <script src="./assets/js/main.js" defer></script>
+</body>
+</html>
