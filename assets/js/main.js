@@ -295,55 +295,73 @@ if (window.ResizeObserver && alertEl) {
 }
 
 });
-document.addEventListener('DOMContentLoaded', async() => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // 啟動機台 & 入場動畫
+  new ModernSlotMachine();
+  const m = document.querySelector('.slot-machine');
+  m.style.opacity = '0';
+  m.style.transform += ' translateY(40px)';
+  setTimeout(() => {
+    m.style.transition = 'all 600ms cubic-bezier(0.25,0.46,0.45,0.94)';
+    m.style.opacity = '1';
+    m.style.transform = m.style.transform.replace(' translateY(40px)', '');
+  }, 100);
+
+  // ---------- 版面尺寸處理 ----------
   const alertEl  = document.querySelector('.mock-alert');
-  const footerEl = document.querySelector('.copyright');
-  const NS  = 'henryyen_slot_machine';
-  const KEY = 'homepage';
-  const todayKey = 'visitFlag_' + new Date().toDateString();
-  const shouldCount = !localStorage.getItem(todayKey); // 一天一次
-  const endpoint = shouldCount ? 'hit' : 'get';
+  const footerEl = document.querySelector('.site-footer'); // ← 修正成 site-footer
 
   const setAlertHeight = () => {
     const h = alertEl ? Math.ceil(alertEl.getBoundingClientRect().height) : 0;
     document.documentElement.style.setProperty('--alert-h', `${h}px`);
   };
-  
   const setFooterHeight = () => {
     const fh = footerEl ? Math.ceil(footerEl.getBoundingClientRect().height) : 0;
-
-    // iOS Safari 會因為底部工具列收展改變可視高度，抓額外需要的安全空間
     const vv = window.visualViewport;
     const extra = vv ? Math.max(0, window.innerHeight - vv.height) : 0;
-
     document.documentElement.style.setProperty('--footer-h', `${fh + extra + 12}px`);
   };
-
   const recalcAll = () => { setAlertHeight(); setFooterHeight(); };
-  try {
-    const r = await fetch(`https://api.countapi.xyz/${endpoint}/${encodeURIComponent(NS)}/${encodeURIComponent(KEY)}`);
-    const data = await r.json();
-    const el = document.getElementById('visit-count');
-    if (el) el.textContent = data.value.toLocaleString();
-    if (shouldCount) localStorage.setItem(todayKey, '1');
-  } catch (e) {
-    console.warn('CountAPI 失敗：', e);
-  }
-  
+
+  setAlertHeight();
+  window.addEventListener('resize', () => setTimeout(setAlertHeight, 50), { passive: true });
+  window.addEventListener('orientationchange', () => setTimeout(setAlertHeight, 300), { passive: true });
+  if (window.ResizeObserver && alertEl) new ResizeObserver(setAlertHeight).observe(alertEl);
+
   recalcAll();
   window.addEventListener('resize', () => setTimeout(recalcAll, 50), { passive:true });
   window.addEventListener('orientationchange', () => setTimeout(recalcAll, 300), { passive:true });
-
-  if (window.ResizeObserver){
+  if (window.ResizeObserver) {
     alertEl  && new ResizeObserver(recalcAll).observe(alertEl);
     footerEl && new ResizeObserver(recalcAll).observe(footerEl);
   }
-  
+
+  // ---------- CountAPI（一天只 +1） ----------
+  const NS  = 'henryyen_slot_machine';
+  const KEY = 'homepage';
+  const todayKey = 'visitFlag_' + new Date().toDateString();
+  const shouldCount = !localStorage.getItem(todayKey);
+  const endpoint = shouldCount ? 'hit' : 'get';
+
+  try {
+    const r = await fetch(
+      `https://api.countapi.xyz/${endpoint}/${encodeURIComponent(NS)}/${encodeURIComponent(KEY)}`,
+      { cache: 'no-store' } // 避免某些瀏覽器快取
+    );
+    const data = await r.json();
+    const el = document.getElementById('visit-count');
+    if (el) el.textContent = (data.value ?? 0).toLocaleString();
+    if (shouldCount) localStorage.setItem(todayKey, '1');
+    console.log('[CountAPI]', endpoint, data);
+  } catch (e) {
+    console.warn('CountAPI 失敗：', e);
+  }
 });
 
-// footer 年份維持
+// footer 年份維持（可留）
 (function(){
   const y = new Date().getFullYear();
   const el = document.getElementById('foot-year');
   if (el) el.textContent = y;
 })();
+
