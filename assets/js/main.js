@@ -295,15 +295,20 @@ if (window.ResizeObserver && alertEl) {
 }
 
 });
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async() => {
   const alertEl  = document.querySelector('.mock-alert');
   const footerEl = document.querySelector('.copyright');
+  const NS  = 'henryyen_slot_machine';
+  const KEY = 'homepage';
+  const todayKey = 'visitFlag_' + new Date().toDateString();
+  const shouldCount = !localStorage.getItem(todayKey); // 一天一次
+  const endpoint = shouldCount ? 'hit' : 'get';
 
   const setAlertHeight = () => {
     const h = alertEl ? Math.ceil(alertEl.getBoundingClientRect().height) : 0;
     document.documentElement.style.setProperty('--alert-h', `${h}px`);
   };
-
+  
   const setFooterHeight = () => {
     const fh = footerEl ? Math.ceil(footerEl.getBoundingClientRect().height) : 0;
 
@@ -315,7 +320,16 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const recalcAll = () => { setAlertHeight(); setFooterHeight(); };
-
+  try {
+    const r = await fetch(`https://api.countapi.xyz/${endpoint}/${encodeURIComponent(NS)}/${encodeURIComponent(KEY)}`);
+    const data = await r.json();
+    const el = document.getElementById('visit-count');
+    if (el) el.textContent = data.value.toLocaleString();
+    if (shouldCount) localStorage.setItem(todayKey, '1');
+  } catch (e) {
+    console.warn('CountAPI 失敗：', e);
+  }
+  
   recalcAll();
   window.addEventListener('resize', () => setTimeout(recalcAll, 50), { passive:true });
   window.addEventListener('orientationchange', () => setTimeout(recalcAll, 300), { passive:true });
@@ -324,6 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
     alertEl  && new ResizeObserver(recalcAll).observe(alertEl);
     footerEl && new ResizeObserver(recalcAll).observe(footerEl);
   }
+  
 });
 
 // footer 年份維持
