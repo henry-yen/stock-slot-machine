@@ -3,17 +3,34 @@
     html { -webkit-text-size-adjust: 100%; }
 
     body{
-      font-family:'Noto Sans TC',sans-serif;
-      background:linear-gradient(135deg,#1a1a1a 0%,#2d1b1b 50%,#1a1a1a 100%);
-      min-height:100vh; display:flex; justify-content:center; align-items:center; padding:20px;
-      background-image:
-        radial-gradient(circle at 20% 30%,rgba(220,20,60,.1) 0%,transparent 40%),
-        radial-gradient(circle at 80% 70%,rgba(255,20,147,.08) 0%,transparent 40%),
-        radial-gradient(circle at 50% 50%,rgba(139,0,0,.05) 0%,transparent 60%);
-      overflow-x: hidden; 
-      -webkit-tap-highlight-color: transparent; 
-      overscroll-behavior-y: none;
-    }
+  font-family:'Noto Sans TC',sans-serif;
+  background:linear-gradient(135deg,#1a1a1a 0%,#2d1b1b 50%,#1a1a1a 100%);
+  background-image:
+    radial-gradient(circle at 20% 30%,rgba(220,20,60,.1) 0%,transparent 40%),
+    radial-gradient(circle at 80% 70%,rgba(255,20,147,.08) 0%,transparent 40%),
+    radial-gradient(circle at 50% 50%,rgba(139,0,0,.05) 0%,transparent 60%);
+  min-height: 100vh;
+
+  /* 只保留這一套版型 */
+  display: flex;
+  flex-direction: column;     /* 直向排版 */
+  align-items: center;        /* 內容水平置中 */
+  justify-content: flex-start;/* 從上往下排 */
+  padding: 20px 20px 40px;
+
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+  padding-bottom: max(40px, calc(env(safe-area-inset-bottom, 0px) + 12px));
+}
+.stage{
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding-top: var(--alert-h);   /* 依橫幅高度自動往下推 */
+}
     @supports (height: 100svh) { body { min-height: 100svh; } }
 
     :root{
@@ -25,6 +42,8 @@
       --border-w: clamp(2px, 0.6vw, 6px);
       --title-size: clamp(20px, 4.2vw, 35px);
       --result-fs: clamp(14px, 3.2vw, 22px);
+      --alert-h: 0px; 
+      --footer-h: 24px;
     }
 
     .slot-machine{
@@ -45,6 +64,7 @@
       will-change: transform;
       touch-action: manipulation;
       max-width: 100%;
+      z-index: 0;
     }
     .slot-machine:hover{ filter: brightness(1.02) saturate(1.02); }
     .slot-machine.spinning{ cursor: default; }
@@ -134,7 +154,7 @@
       overflow-y:auto; max-height: 40vh;
     }
 
-    .result-content{ font-size: var(--result-fs); font-weight:500; color:#ff1493; text-align:center; text-shadow:0 0 15px #ff1493,0 0 25px #dc143c; font-family:'Noto Sans TC',monospace; letter-spacing:1px; line-height:1.6; white-space:pre-line; word-wrap:break-word; word-break: break-word; }
+    .result-content{ font-size: var(--result-fs); font-weight:500; color:#f8f8f8; text-align:center; text-shadow:0 0 15px #080808,0 0 25px #f7f2f3; font-family:'Noto Sans TC',monospace; letter-spacing:1px; line-height:1.6; white-space:pre-line; word-wrap:break-word; word-break: break-word; }
 
     .loading{ color:#ff1493; animation:neonGlow 1.2s ease-in-out infinite alternate; }
     @keyframes neonGlow{ from{ text-shadow:0 0 10px #ff1493,0 0 20px #ff1493; color:#ff1493; } to{ text-shadow:0 0 20px #ff1493,0 0 30px #ff1493,0 0 40px #dc143c; color:#ff69b4; } }
@@ -153,7 +173,7 @@
 
     .instructions{ text-align:center; color:rgba(255,255,255,.9); font-size: clamp(12px, 2.8vw, 17px); font-weight:400; margin-top: clamp(12px, 2.8vw, 30px); text-shadow:1px 1px 2px rgba(0,0,0,.5); }
     .error{ color:#ff6b6b; text-shadow:0 0 10px #ff6b6b; }
-    .success{ animation:successNeon 1.2s ease-in-out; color:#ff1493; text-shadow:0 0 15px #ff1493,0 0 25px #dc143c; }
+    .success{ color:#fdfcfd; text-shadow:0 0 15px #0e0d0d,0 0 25px #1a1919; }
     @keyframes successNeon{ 0%{ transform:scale(1); } 15%{ transform:scale(1.03); text-shadow:0 0 22px #ff1493,0 0 30px #dc143c,0 0 36px #ff1493; } 45%{ transform:scale(1.02); } 100%{ transform:scale(1); text-shadow:0 0 15px #ff1493,0 0 25px #dc143c; } }
 
     @media (max-width: 520px){
@@ -164,6 +184,7 @@
         0 0 0 6px #0d0d0d,
         0 0 28px rgba(220,20,60,.35),
         0 0 56px rgba(255,20,147,.22);
+        margin-bottom: clamp(24px, 6vh, 56px);
       }
       .result-screen{ min-height: 90px; }
     }
@@ -173,3 +194,99 @@
       .slot-machine{ transition:none; }
       .success, .loading{ animation: none; }
     }
+
+
+/* iOS 位址列高度變動，用 dvh 比 vh 更穩 */
+@supports (height: 100dvh) { body { min-height: 100dvh; } }
+
+/* 置頂滿版黃底告警橫幅（行為一致，手機優先） */
+.mock-alert{
+  position: fixed;
+  inset: 0 0 auto 0;                 /* top:0; left:0; right:0; */
+  z-index: 9999;
+
+  /* 用 grid 保證中間文字真正置中，不被關閉鈕拉偏 */
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;  /* 左空位 / 文案 / 關閉鈕 */
+  align-items: center;
+  text-align: center;
+  line-height: 1.45;
+
+  /* safe-area，不要再 +10 了，iOS 會整個過厚 */
+  padding-top: max(6px, env(safe-area-inset-top, 0px));
+  padding-bottom: 6px;
+  padding-left: 8px;
+  padding-right: 8px;
+  box-sizing: border-box;
+
+  background: #fff7e6;
+  color: #6b4e00;
+  border-bottom: 1px solid #ffd591;
+  box-shadow: 0 4px 14px rgba(0,0,0,.10);
+}
+.mock-alert .mock-alert-text{
+  grid-column: 2;                    /* 文字永遠在中間欄 */
+  width: 100%;
+  padding: 0 4px;
+  font-size: clamp(13px, 3.6vw, 15px);
+  word-break: break-word;
+}
+.mock-alert .mock-alert-close{
+  grid-column: 3;
+  justify-self: center;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  color: #8c6d1a;
+}
+
+/* 內容往下推，避免被橫幅蓋住 */
+:root { --alert-h: 0px; }
+.stage{
+   padding-top: var(--alert-h); 
+   padding-top: var(--alert-h);
+   padding-bottom: var(--footer-h);
+}
+
+/* 小螢幕再壓縮一點欄寬與字級 */
+@media (max-width: 390px){
+  .mock-alert{ grid-template-columns: 40px 1fr 40px; }
+  .mock-alert .mock-alert-text{ font-size: clamp(12px, 3.4vw, 14px); }
+}
+
+/* 收起動畫 */
+.mock-alert--hidden{
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .25s ease, opacity .25s ease;
+}
+
+    /* ===== FOOTER ===== */
+    .site-footer {
+      position: relative;
+      z-index: 2;
+      background: rgba(255,255,255,.85);
+      backdrop-filter: blur(2px);
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-top: 20px;
+      
+      /* Center the footer content */
+      text-align: center;
+      max-width: min(90vw, 500px);
+      width: 100%;
+      
+      font-size: 12px;
+      opacity: 0.8;
+      line-height: 1.4;
+      color: #333;
+    }
+
+    .site-footer p {
+      margin: 4px 0;
+    }
+
+    

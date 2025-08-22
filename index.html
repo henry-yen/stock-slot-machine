@@ -2,47 +2,70 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>台股拉霸機</title>
+  <meta name="description" content="台股拉霸機：僅供娛樂與開發測試使用，內容為示意畫面，非投資建議。" />
+  <meta name="theme-color" content="#1a1a1a" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./assets/css/main.css">
 
+  <!-- 你的主要樣式 -->
+  <link rel="stylesheet" href="./assets/css/main.css">
 </head>
 <body>
-  <div class="slot-machine" id="slotMachine" role="button" aria-label="抽取幸運股票" tabindex="0" aria-live="polite">
-    <div class="machine-lights"></div>
+  <!-- 跳到主要內容（鍵盤更友善） -->
+  <a href="#main" class="skip-link" style="position:absolute;left:-9999px;">跳至主要內容</a>
 
-    <div class="machine-top">
-      <h1 class="title">🎰 台股拉霸機</h1>
+  <header class="site-header" role="banner">
+    <!-- 若頁面另有 Logo/導覽可放在這裡；標題視覺仍由機台中的 .title 呈現 -->
+  </header>
+
+  <main id="main" class="stage" role="main">
+    <!-- 固定在視窗；文案與圖示交由 JS 注入 -->
+    <div class="mock-alert" role="alert" aria-live="polite" aria-atomic="true">
+      <span class="mock-alert-text"></span>
+      <button class="mock-alert-close" type="button" aria-label="關閉提醒"></button>
     </div>
 
-    <div class="slots-container">
-      <div class="slot"><div class="slot-reel" id="reel1">
-        <div class="slot-item">💰</div><div class="slot-item">📈</div><div class="slot-item">🚀</div><div class="slot-item">💎</div>
-        <div class="slot-item">⭐</div><div class="slot-item">🎯</div><div class="slot-item">🔥</div><div class="slot-item">💝</div>
-      </div></div>
+    <!-- 主要互動區：整台機台可點擊／空白鍵啟動 -->
+    <section class="slot-machine"
+             id="slotMachine"
+             role="button"
+             aria-label="抽取幸運股票"
+             aria-keyshortcuts="Space"
+             aria-describedby="instructions"
+             tabindex="0">
+      <div class="machine-lights" aria-hidden="true"></div>
 
-      <div class="slot"><div class="slot-reel" id="reel2">
-        <div class="slot-item">🎲</div><div class="slot-item">🎊</div><div class="slot-item">🌟</div><div class="slot-item">💫</div>
-        <div class="slot-item">🎈</div><div class="slot-item">🎭</div><div class="slot-item">🎪</div><div class="slot-item">🎨</div>
-      </div></div>
-
-      <div class="slot"><div class="slot-reel" id="reel3">
-        <div class="slot-item">🏆</div><div class="slot-item">🎖️</div><div class="slot-item">👑</div><div class="slot-item">💰</div>
-        <div class="slot-item">🎯</div><div class="slot-item">⚡</div><div class="slot-item">🔮</div><div class="slot-item">🎁</div>
-      </div></div>
-    </div>
-
-    <div class="result-display">
-      <div class="result-screen">
-        <div class="result-content" id="result">按機台或按空白鍵開始抽獎！</div>
+      <div class="machine-top">
+        <h1 class="title">台股拉霸機</h1>
       </div>
-    </div>
 
-    <div class="instructions"><p>🎮 點擊機台任意處或按空白鍵抽取幸運股票</p></div>
-  </div>
+      <div class="slots-container" aria-hidden="true">
+        <div class="slot"><div class="slot-reel" id="reel1"></div></div>
+        <div class="slot"><div class="slot-reel" id="reel2"></div></div>
+        <div class="slot"><div class="slot-reel" id="reel3"></div></div>
+      </div>
+
+      <div class="result-display">
+        <div class="result-screen" role="status" aria-live="polite" aria-atomic="true">
+          <div class="result-content" id="result">按機台或按空白鍵開始抽獎！</div>
+        </div>
+      </div>
+
+      
+    </section>
+  </main>
+
+ <footer class="site-footer" role="contentinfo">
+    <p>僅供測試參考，非投資建議；投資有風險，盈虧自負</p>
+    <p>© <span id="foot-year">2025</span> Henry Yen. All Rights Reserved.</p>
+  </footer>
+
+  <!-- 只保留這一支主程式 -->
   <script src="./assets/js/main.js" defer></script>
+  <noscript>本網站需要啟用 JavaScript 才能運作。</noscript>
 </body>
 </html>
